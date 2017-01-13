@@ -12,6 +12,8 @@ Author: angwei(angwei@baidu.com)
 Date: 2017/01/13 15:05:53
 """
 
+from datetime import datetime, timedelta
+
 # Item 29
 
 class Resistor(object):
@@ -63,6 +65,31 @@ class FixedResistance(Resistor):
         self._ohms = ohms
 
 
+class Bucket(object):
+    def __init__(self, period):
+        self.period_delta = timedelta(seconds=period)
+        self.reset_time = datetime.now()
+        self.quota = 0
+    
+    def __repr__(self):
+        return 'Bucket(quota=%d)' % self.quota
+    
+def fill(bucket, amount):
+    now = datetime.now()
+    if now - bucket.reset_time > bucket.period_delta:
+        bucket.quota = 0
+        bucket.reset_time = now
+    bucket.quota += amount
+
+def deduct(bucket, amount):
+    now = datetime.now()
+    if now - bucket.reset_time > bucket.period_delta:
+        return False
+    if bucket.quota - amount < 0:
+        return False
+    bucket.quota -= amount
+    return True
+
 def item29():
     r = BoundedResistance(1e3)
 #       r.ohms = 0
@@ -71,8 +98,21 @@ def item29():
 #    r3.ohms = 10
 
 
+def item30():
+    bucket = Bucket(60)
+    fill(bucket, 100)
+    print(bucket)
+
+    if deduct(bucket, 99):
+        print("Had 99 quota")
+    else:
+        print("Not enough for 99 quota")
+    print(bucket)
+
+     
 def main():
-    item29()
+#    item29()
+    item30()
     pass
 
 
