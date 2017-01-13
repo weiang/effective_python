@@ -109,11 +109,42 @@ def item30():
         print("Not enough for 99 quota")
     print(bucket)
 
-     
+
+class Grade(object):
+    def __init__(self):
+        self._value = {}
+
+    def __get__(self, instance, instance_type):
+        if instance is None:
+            return self
+        else:
+            return self._value.get(instance, 0)
+
+    def __set__(self, instance, value):
+        if not (0 <= value <= 100):
+            raise ValueError('Grade must between 0 and 100')
+        self._value[instance] = value
+
+
+class Exam(object):
+    math_grade = Grade()
+    writing_grade = Grade()
+    science_grade = Grade()
+
+
+def item31():
+    first_exam = Exam()
+    first_exam.writing_grade = 82
+    second_exam = Exam()
+    second_exam.writing_grade = 75
+    print('First ', first_exam.writing_grade)
+    print('Second ', second_exam.writing_grade)
+
+
 def main():
 #    item29()
-    item30()
-    pass
+#    item30()
+    item31()
 
 
 if __name__ == '__main__':
