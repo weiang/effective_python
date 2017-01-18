@@ -12,7 +12,9 @@ Author: angwei(angwei@baidu.com)
 Date: 2017/01/18 16:15:04
 """
 
+from contextlib import contextmanager
 from functools import wraps
+import logging
 
 # item 42
 
@@ -36,8 +38,58 @@ def item42():
     fibonacci(10)
 
 
+def my_function():
+    logging.debug('Some debug data')
+    logging.error('Error log here')
+    logging.debug('More debug data')
+
+
+@contextmanager
+def debug_logging(level):
+    logger = logging.getLogger()
+    old_level = logger.getEffectiveLevel()
+    logger.setLevel(level)
+    try:
+        yield
+    finally:
+        logger.setLevel(old_level)
+
+
+@contextmanager
+def log_level(level, name):
+    logger = logging.getLogger(name)
+    old_level = logger.getEffectiveLevel()
+    logger.setLevel(level)
+    try:
+        yield logger
+    finally:
+        logger.setLevel(old_level)
+
+
+def item43():
+    with debug_logging(logging.DEBUG):
+        print('Inside:')
+        my_function()
+    print('After:')
+    my_function()
+
+    print('-------------------')
+    with log_level(logging.DEBUG, 'my-log') as logger:
+        logger.debug('This is my message')
+        logging.debug('This will not print')
+    logger = logging.getLogger('my-log')
+    logger.debug('Debug will not print')
+    logger.error('Error will print')
+
+
+def item44():
+    pass
+
+
 def main():
-    item42()
+#    item42()
+#    item43()
+    item44()
 
 
 if __name__ == '__main__':
